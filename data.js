@@ -202,11 +202,11 @@ function formatPrice(price) {
 }
 
 function statusLabel(s) {
-  return { available: 'Продаётся', reserved: 'Зарезервирован', sold: 'Продан' }[s] || s;
+  return { available: 'Продаётся', reserved: 'Зарезервирован', sold: 'Продан' }[s] || 'Продаётся';
 }
 
 function typeLabel(t) {
-  return { land: 'Участок', warehouse: 'Склад', production: 'Производство', building: 'Здание' }[t] || t;
+  return { land: 'Участок', warehouse: 'Склад', production: 'Производство', building: 'Здание' }[t] || 'Объект';
 }
 
 function typeIcon(t) {

@@ -9,6 +9,17 @@
   <link rel="stylesheet" href="main.css" />
   <link rel="stylesheet" href="services.css" />
   <link rel="stylesheet" href="objects.css" />
+  <!-- Yandex.Metrika — замените XXXXXXXX на ваш номер счётчика -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+    ym(XXXXXXXX,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute;left:-9999px;" alt=""></div></noscript>
+  <!-- /Yandex.Metrika -->
 </head>
 <body>
 
@@ -203,8 +214,8 @@
         <div class="ocard__img">
           ${photo ? `<img src="${photo}" alt="" loading="lazy" onerror="this.parentElement.style.background='#1a2e1a'">` : '<div class="ocard__img-placeholder"></div>'}
           <div class="ocard__badges">
-            <span class="ocard__type ocard__type--${obj.type}">${typeLabel(obj.type)}</span>
-            <span class="ocard__status ocard__status--${obj.status}">${statusLabel(obj.status)}</span>
+            <span class="ocard__type ocard__type--${obj.type||'land'}">${typeLabel(obj.type)}</span>
+            <span class="ocard__status ocard__status--${obj.status||'available'}">${statusLabel(obj.status)}</span>
           </div>
         </div>
         <div class="ocard__body">

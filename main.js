@@ -4,18 +4,18 @@ window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 60);
 });
 
-// Burger menu (mobile)
-document.getElementById('burger')?.addEventListener('click', () => {
-  const links = document.querySelector('.nav__links');
-  links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
-  links.style.flexDirection = 'column';
-  links.style.position = 'absolute';
-  links.style.top = '72px';
-  links.style.left = '0';
-  links.style.right = '0';
-  links.style.background = 'var(--dark)';
-  links.style.padding = '20px 32px';
-  links.style.gap = '16px';
+// Burger menu (mobile) — toggle class on nav
+const burger = document.getElementById('burger');
+burger?.addEventListener('click', () => {
+  nav.classList.toggle('nav--open');
+});
+// Close menu when any link is clicked
+document.querySelectorAll('.nav__links a').forEach(a => {
+  a.addEventListener('click', () => nav.classList.remove('nav--open'));
+});
+// Close on outside click
+document.addEventListener('click', e => {
+  if (!nav.contains(e.target)) nav.classList.remove('nav--open');
 });
 
 // Contact form — заглушка
