@@ -1,13 +1,11 @@
 /* ========== FILTERS BAR ========== */
-.filters-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 20px 0; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.filters-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 20px 0; position: sticky; top: 72px; z-index: 50; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
 .filter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
 .filter-row:last-child { margin-bottom: 0; }
 .filter-row--bottom { justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border); }
 .filter-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); white-space: nowrap; }
 .filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-.filter-btns--scroll { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
-.filter-btns--scroll::-webkit-scrollbar { height: 3px; }
-.filter-btns--scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.filter-btns--scroll { flex-wrap: wrap; gap: 6px; }
 
 .fbtn { padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--white); font-size: 13px; font-weight: 500; color: var(--text-light); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: var(--font-sans); }
 .fbtn:hover { border-color: var(--green-mid); color: var(--green-mid); }
@@ -62,6 +60,9 @@
 .detail-breadcrumb a { color: var(--text-light); transition: color 0.2s; }
 .detail-breadcrumb a:hover { color: var(--green-mid); }
 .detail-breadcrumb span { color: #d1d5db; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--green-mid) !important; font-size: 14px; padding: 6px 14px; border-radius: 20px; background: #e8f5e9; border: 1px solid #c8e6c9; transition: background 0.15s; }
+.back-btn:hover { background: #c8e6c9 !important; }
+.bc-sep { color: #d1d5db; margin: 0 4px; }
 
 .detail-main { display: grid; grid-template-columns: 1fr 380px; gap: 40px; padding: 40px 32px; align-items: start; }
 

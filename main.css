@@ -28,6 +28,8 @@ p + p { margin-top: 14px; }
 
 /* ========== NAV ========== */
 .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 32px; height: 72px; display: flex; align-items: center; transition: background 0.3s, box-shadow 0.3s; }
+/* На детальной странице объекта — меню в потоке, не перекрывает контент */
+.nav--static { position: relative; top: auto; left: auto; right: auto; background: var(--dark) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
 .nav.scrolled { background: var(--dark); box-shadow: 0 2px 20px rgba(0,0,0,0.4); }
 .nav__inner { width: 100%; max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
 .nav__logo { font-family: var(--font-serif); font-size: 22px; font-weight: 700; color: var(--white); letter-spacing: 1px; }
