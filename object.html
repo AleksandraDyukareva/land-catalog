@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Объект — Александра Дюкарева</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="objects.css" />
+</head>
+<body>
+
+  <nav class="nav scrolled" id="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">АД<span>·</span>Земля</a>
+      <div class="nav__links">
+        <a href="/#about">Обо мне</a>
+        <a href="services.html">Услуги</a>
+        <a href="objects.html" style="color:var(--gold)">Объекты</a>
+        <a href="partnership.html">Партнёрство</a>
+        <a href="/#contact">Контакт</a>
+        <a href="catalog.html" class="nav__cta">Карта →</a>
+      </div>
+      <button class="nav__burger" id="burger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div id="page-content">
+    <div class="detail-loading">Загрузка объекта...</div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__logo">АД<span>·</span>Земля</div>
+        <div class="footer__links">
+          <a href="/">Главная</a>
+          <a href="services.html">Услуги</a>
+          <a href="partnership.html">Партнёрство</a>
+          <a href="objects.html">Объекты</a>
+          <a href="catalog.html">Карта</a>
+          <a href="/#contact">Контакт</a>
+        </div>
+        <div class="footer__copy">© 2025 Александра Дюкарева. Земельный специалист МО</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="data.js"></script>
+  <script src="main.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const objectId = params.get('id');
+
+    async function init() {
+      const objects = await loadObjects();
+      const obj = objects.find(o => String(o.id) === String(objectId));
+      if (!obj) {
+        document.getElementById('page-content').innerHTML =
+          '<div class="detail-loading">Объект не найден. <a href="objects.html">← Вернуться к списку</a></div>';
+        return;
+      }
+      document.title = `${obj.name} — Александра Дюкарева`;
+      renderDetail(obj, objects);
+    }
+
+    function renderDetail(obj, all) {
+      const photos = (obj.photos || '').split(',').map(p => p.trim()).filter(Boolean);
+      const pricePerUnit = obj.price && obj.area_ha
+        ? (obj.type === 'land'
+            ? `${formatPrice(Math.round(obj.price / obj.area_ha))} / га`
+            : obj.building_area ? `${formatPrice(Math.round(obj.price / obj.building_area))} / кв.м` : '')
+        : '';
+
+      const rosreestrUrl = obj.cadastral
+        ? `https://rosreestr.gov.ru/wps/portal/p/cc_present/ir_egrn#!query=${encodeURIComponent(obj.cadastral)}`
+        : null;
+      const nspdUrl = obj.cadastral
+        ? `https://nspd.gov.ru/?cadastralNumber=${encodeURIComponent(obj.cadastral)}`
+        : null;
+
+      // Specific fields by type
+      const isBuilding = ['warehouse','production','building'].includes(obj.type);
+      const extraFields = isBuilding ? `
+        ${obj.building_area ? fieldCard('Площадь здания', obj.building_area + ' кв.м') : ''}
+        ${obj.floors ? fieldCard('Этажей', obj.floors) : ''}
+        ${obj.ceiling_height ? fieldCard('Высота потолков', obj.ceiling_height + ' м') : ''}
+        ${obj.loading_docks ? fieldCard('Ворота / погрузка', obj.loading_docks) : ''}
+        ${obj.power_kw ? fieldCard('Электричество', obj.power_kw + ' кВт') : ''}
+        ${obj.year_built ? fieldCard('Год постройки', obj.year_built) : ''}
+      ` : '';
+
+      const similar = all
+        .filter(o => o.id !== obj.id && o.type === obj.type)
+        .slice(0, 3);
+
+      document.getElementById('page-content').innerHTML = `
+
+        <!-- BREADCRUMB -->
+        <div class="detail-breadcrumb">
+          <div class="container">
+            <a href="/">Главная</a>
+            <span>/</span>
+            <a href="objects.html">Объекты</a>
+            <span>/</span>
+            <span>${obj.name}</span>
+          </div>
+        </div>
+
+        <!-- MAIN -->
+        <div class="detail-main container">
+
+          <!-- GALLERY -->
+          <div class="detail-gallery">
+            <div class="gallery-main" id="gallery-main">
+              ${photos[0] ? `<img src="${photos[0]}" alt="" id="main-photo">` : '<div class="gallery-placeholder"></div>'}
+              <div class="gallery-badges">
+                <span class="ocard__type ocard__type--${obj.type}">${typeLabel(obj.type)}</span>
+                <span class="ocard__status ocard__status--${obj.status}">${statusLabel(obj.status)}</span>
+              </div>
+              ${photos.length > 1 ? `
+              <button class="gallery-nav gallery-nav--prev" id="gallery-prev">‹</button>
+              <button class="gallery-nav gallery-nav--next" id="gallery-next">›</button>
+              <div class="gallery-counter" id="gallery-counter">1 / ${photos.length}</div>
+              ` : ''}
+            </div>
+            ${photos.length > 1 ? `
+            <div class="gallery-thumbs" id="gallery-thumbs">
+              ${photos.map((p, i) => `<img src="${p}" class="thumb${i===0?' active':''}" data-idx="${i}" alt="">`).join('')}
+            </div>` : ''}
+          </div>
+
+          <!-- SIDEBAR -->
+          <div class="detail-sidebar">
+            <div class="detail-card">
+              <div class="detail-highway">${obj.highway ? obj.highway + ' шоссе' : ''}</div>
+              <h1 class="detail-title">${obj.name}</h1>
+              <div class="detail-price-row">
+                <div class="detail-price">${formatPrice(obj.price)}</div>
+                ${pricePerUnit ? `<div class="detail-price-unit">${pricePerUnit}</div>` : ''}
+              </div>
+
+              <div class="detail-quick">
+                ${obj.area_ha ? `<div class="dq-item"><div class="dq-val">${obj.area_ha} га</div><div class="dq-key">Участок</div></div>` : ''}
+                ${obj.building_area ? `<div class="dq-item"><div class="dq-val">${obj.building_area} м²</div><div class="dq-key">Здание</div></div>` : ''}
+                ${obj.ceiling_height ? `<div class="dq-item"><div class="dq-val">${obj.ceiling_height} м</div><div class="dq-key">Потолки</div></div>` : ''}
+                ${obj.power_kw ? `<div class="dq-item"><div class="dq-val">${obj.power_kw} кВт</div><div class="dq-key">Эл-во</div></div>` : ''}
+              </div>
+
+              <div class="detail-actions">
+                <a href="https://t.me/username" class="btn btn--green btn--full" target="_blank">Написать в Telegram</a>
+                <a href="https://wa.me/79999999999" class="btn btn--outline-dark btn--full" target="_blank">Написать в WhatsApp</a>
+              </div>
+
+              <div class="detail-specialist">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&q=80" alt="">
+                <div>
+                  <div class="ds-name">Александра Дюкарева</div>
+                  <div class="ds-role">Земельный специалист · 8 лет опыта</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAILS -->
+        <div class="detail-body container">
+
+          <!-- DESCRIPTION -->
+          <div class="detail-section">
+            <h2 class="detail-section-title">Описание</h2>
+            <div class="detail-description">${(obj.description || '').replace(/\n/g, '<br>')}</div>
+          </div>
+
+          <!-- CHARACTERISTICS -->
+          <div class="detail-section">
+            <h2 class="detail-section-title">Характеристики</h2>
+            <div class="detail-fields">
+              ${fieldCard('Статус', statusLabel(obj.status))}
+              ${obj.cadastral ? fieldCard('Кадастровый номер', obj.cadastral) : ''}
+              ${obj.address ? fieldCard('Адрес', obj.address) : ''}
+              ${obj.area_ha ? fieldCard('Площадь участка', obj.area_ha + ' га') : ''}
+              ${obj.land_category ? fieldCard('Категория земель', obj.land_category) : ''}
+              ${obj.vri ? fieldCard('Вид разрешённого использования', obj.vri) : ''}
+              ${obj.utilities ? fieldCard('Коммуникации', obj.utilities) : ''}
+              ${obj.highway ? fieldCard('Направление', obj.highway + ' шоссе') : ''}
+              ${extraFields}
+              ${obj.extra_info ? fieldCard('Дополнительно', obj.extra_info) : ''}
+            </div>
+          </div>
+
+          <!-- LINKS -->
+          ${rosreestrUrl || nspdUrl ? `
+          <div class="detail-section">
+            <h2 class="detail-section-title">Документы и реестры</h2>
+            <div class="detail-links">
+              ${rosreestrUrl ? `<a class="detail-link detail-link--rosreestr" href="${rosreestrUrl}" target="_blank">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="14" height="16" rx="1.5"/><path d="M7 7h6M7 10h6M7 13h4" stroke-linecap="round"/></svg>
+                Росреестр
+              </a>` : ''}
+              ${nspdUrl ? `<a class="detail-link detail-link--nspd" href="${nspdUrl}" target="_blank">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="3,6 9,3 15,6 21,3 21,18 15,21 9,18 3,21"/></svg>
+                НСПД
+              </a>` : ''}
+            </div>
+          </div>` : ''}
+
+          <!-- MAP -->
+          ${obj.lat && obj.lng ? `
+          <div class="detail-section">
+            <h2 class="detail-section-title">Расположение</h2>
+            <div class="detail-map" id="detail-map"></div>
+          </div>` : ''}
+
+          <!-- SIMILAR -->
+          ${similar.length ? `
+          <div class="detail-section">
+            <h2 class="detail-section-title">Похожие объекты</h2>
+            <div class="similar-grid">
+              ${similar.map(o => {
+                const p = (o.photos||'').split(',')[0].trim();
+                return `<a class="similar-card" href="object.html?id=${o.id}">
+                  <div class="similar-img">${p ? `<img src="${p}" alt="" loading="lazy">` : ''}</div>
+                  <div class="similar-body">
+                    <div class="ocard__type ocard__type--${o.type}">${typeLabel(o.type)}</div>
+                    <div class="similar-name">${o.name}</div>
+                    <div class="similar-price">${formatPrice(o.price)}</div>
+                  </div>
+                </a>`;
+              }).join('')}
+            </div>
+          </div>` : ''}
+
+        </div>
+      `;
+
+      // Gallery
+      if (photos.length > 1) {
+        let cur = 0;
+        const mainImg = document.getElementById('main-photo');
+        const counter = document.getElementById('gallery-counter');
+        const thumbs = document.querySelectorAll('.thumb');
+
+        function setPhoto(idx) {
+          cur = (idx + photos.length) % photos.length;
+          if (mainImg) mainImg.src = photos[cur];
+          if (counter) counter.textContent = `${cur+1} / ${photos.length}`;
+          thumbs.forEach((t,i) => t.classList.toggle('active', i===cur));
+          thumbs[cur]?.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'nearest' });
+        }
+        document.getElementById('gallery-prev')?.addEventListener('click', () => setPhoto(cur-1));
+        document.getElementById('gallery-next')?.addEventListener('click', () => setPhoto(cur+1));
+        thumbs.forEach(t => t.addEventListener('click', () => setPhoto(+t.dataset.idx)));
+      }
+
+      // Map
+      if (obj.lat && obj.lng) {
+        setTimeout(() => {
+          const map = L.map('detail-map', { zoomControl: true }).setView([obj.lat, obj.lng], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap', maxZoom: 18
+          }).addTo(map);
+          const color = { available:'#2d7a3a', reserved:'#e67e22', sold:'#9ca3af' }[obj.status] || '#2d7a3a';
+          L.marker([obj.lat, obj.lng], {
+            icon: L.divIcon({
+              className: '',
+              html: `<div style="width:32px;height:32px;background:${color};border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`,
+              iconSize: [32,32], iconAnchor: [16,32]
+            })
+          }).addTo(map).bindPopup(`<b>${obj.name}</b><br>${formatPrice(obj.price)}`).openPopup();
+        }, 100);
+      }
+    }
+
+    function fieldCard(label, value) {
+      return `<div class="dfield"><div class="dfield__label">${label}</div><div class="dfield__value">${value}</div></div>`;
+    }
+
+    init();
+  </script>
+</body>
+</html>

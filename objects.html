@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Объекты — Александра Дюкарева</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="services.css" />
+  <link rel="stylesheet" href="objects.css" />
+</head>
+<body>
+
+  <nav class="nav scrolled" id="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">АД<span>·</span>Земля</a>
+      <div class="nav__links">
+        <a href="/#about">Обо мне</a>
+        <a href="services.html">Услуги</a>
+        <a href="objects.html" style="color:var(--gold)">Объекты</a>
+        <a href="partnership.html">Партнёрство</a>
+        <a href="/#contact">Контакт</a>
+        <a href="catalog.html" class="nav__cta">Карта →</a>
+      </div>
+      <button class="nav__burger" id="burger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <section class="page-hero">
+    <div class="page-hero__bg">
+      <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1800&q=80" alt="" />
+      <div class="page-hero__overlay"></div>
+    </div>
+    <div class="page-hero__content container">
+      <div class="breadcrumb"><a href="/">Главная</a> <span>/</span> Объекты</div>
+      <h1>Все объекты</h1>
+      <p>Земельные участки, склады, здания и производства<br>в Московской области с проверенными документами</p>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <div class="filters-bar" id="filters-bar">
+    <div class="container">
+
+      <!-- Тип объекта -->
+      <div class="filter-row">
+        <span class="filter-label">Тип:</span>
+        <div class="filter-btns" id="type-filters">
+          <button class="fbtn active" data-type="">Все типы</button>
+          <button class="fbtn fbtn--land" data-type="land">Участки</button>
+          <button class="fbtn fbtn--warehouse" data-type="warehouse">Склады</button>
+          <button class="fbtn fbtn--production" data-type="production">Производства</button>
+          <button class="fbtn fbtn--building" data-type="building">Здания</button>
+        </div>
+      </div>
+
+      <!-- Направление -->
+      <div class="filter-row">
+        <span class="filter-label">Направление:</span>
+        <div class="filter-btns filter-btns--scroll" id="highway-filters">
+          <button class="fbtn active" data-highway="">Все</button>
+          <!-- Генерируется из JS -->
+        </div>
+      </div>
+
+      <!-- Сортировка и счётчик -->
+      <div class="filter-row filter-row--bottom">
+        <div class="objects-count" id="objects-count">Загрузка...</div>
+        <div class="filter-sort">
+          <label>Сортировка:</label>
+          <select id="sort-select">
+            <option value="price-asc">Цена ↑</option>
+            <option value="price-desc">Цена ↓</option>
+            <option value="area-asc">Площадь ↑</option>
+            <option value="area-desc">Площадь ↓</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OBJECTS GRID -->
+  <section class="objects-section">
+    <div class="container">
+      <div class="objects-grid" id="objects-grid">
+        <div class="objects-loading">Загрузка объектов...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta__bg">
+      <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1800&q=80" alt="" />
+      <div class="cta__overlay"></div>
+    </div>
+    <div class="container">
+      <div class="cta__content">
+        <h2>Не нашли подходящий объект?</h2>
+        <p>Опишите задачу — найду под запрос из закрытых баз</p>
+        <div class="cta__actions">
+          <a href="/#contact" class="btn btn--gold">Написать запрос</a>
+          <a href="catalog.html" class="btn btn--outline">Смотреть на карте</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__logo">АД<span>·</span>Земля</div>
+        <div class="footer__links">
+          <a href="/">Главная</a>
+          <a href="services.html">Услуги</a>
+          <a href="partnership.html">Партнёрство</a>
+          <a href="objects.html">Объекты</a>
+          <a href="catalog.html">Карта</a>
+          <a href="/#contact">Контакт</a>
+        </div>
+        <div class="footer__copy">© 2025 Александра Дюкарева. Земельный специалист МО</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="main.js"></script>
+  <script>
+    let allObjects = [];
+    let activeType = '';
+    let activeHighway = '';
+
+    async function init() {
+      allObjects = await loadObjects();
+      buildHighwayFilters();
+      render();
+    }
+
+    function buildHighwayFilters() {
+      const used = [...new Set(allObjects.map(o => o.highway).filter(Boolean))];
+      const container = document.getElementById('highway-filters');
+      used.sort().forEach(hw => {
+        const btn = document.createElement('button');
+        btn.className = 'fbtn';
+        btn.dataset.highway = hw;
+        btn.textContent = hw;
+        container.appendChild(btn);
+      });
+      container.querySelectorAll('[data-highway]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          container.querySelectorAll('[data-highway]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeHighway = btn.dataset.highway;
+          render();
+        });
+      });
+    }
+
+    document.getElementById('type-filters').addEventListener('click', e => {
+      const btn = e.target.closest('[data-type]');
+      if (!btn) return;
+      document.querySelectorAll('[data-type]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeType = btn.dataset.type;
+      render();
+    });
+
+    document.getElementById('sort-select').addEventListener('change', render);
+
+    function render() {
+      const sort = document.getElementById('sort-select').value;
+      let list = allObjects.filter(o =>
+        (!activeType || o.type === activeType) &&
+        (!activeHighway || o.highway === activeHighway)
+      );
+      list.sort((a, b) => {
+        if (sort === 'price-asc') return a.price - b.price;
+        if (sort === 'price-desc') return b.price - a.price;
+        if (sort === 'area-asc') return (parseFloat(a.area_ha)||0) - (parseFloat(b.area_ha)||0);
+        if (sort === 'area-desc') return (parseFloat(b.area_ha)||0) - (parseFloat(a.area_ha)||0);
+        return 0;
+      });
+      document.getElementById('objects-count').textContent =
+        `${list.length} объект${plural(list.length)} найдено`;
+      const grid = document.getElementById('objects-grid');
+      if (!list.length) {
+        grid.innerHTML = '<div class="objects-empty">По выбранным фильтрам объектов нет</div>';
+        return;
+      }
+      grid.innerHTML = list.map(obj => cardHTML(obj)).join('');
+    }
+
+    function cardHTML(obj) {
+      const photo = (obj.photos || '').split(',')[0].trim();
+      const specs = obj.type === 'land'
+        ? `<span>${obj.area_ha} га</span><span class="dot">·</span><span>${obj.land_category ? obj.land_category.replace('Земли ','') : ''}</span>`
+        : `<span>${obj.building_area ? obj.building_area+' кв.м' : ''}</span>${obj.area_ha ? `<span class="dot">·</span><span>участок ${obj.area_ha} га</span>` : ''}`;
+
+      return `<a class="ocard" href="object.html?id=${obj.id}">
+        <div class="ocard__img">
+          ${photo ? `<img src="${photo}" alt="" loading="lazy" onerror="this.parentElement.style.background='#1a2e1a'">` : '<div class="ocard__img-placeholder"></div>'}
+          <div class="ocard__badges">
+            <span class="ocard__type ocard__type--${obj.type}">${typeLabel(obj.type)}</span>
+            <span class="ocard__status ocard__status--${obj.status}">${statusLabel(obj.status)}</span>
+          </div>
+        </div>
+        <div class="ocard__body">
+          <div class="ocard__highway">${obj.highway ? obj.highway+' шоссе' : obj.address}</div>
+          <h3 class="ocard__name">${obj.name}</h3>
+          <div class="ocard__specs">${specs}</div>
+          <div class="ocard__address">${obj.address}</div>
+          <div class="ocard__footer">
+            <div class="ocard__price">${formatPrice(obj.price)}</div>
+            <span class="ocard__link">Подробнее →</span>
+          </div>
+        </div>
+      </a>`;
+    }
+
+    function plural(n) {
+      if (n%10===1 && n%100!==11) return '';
+      if (n%10>=2 && n%10<=4 && (n%100<10||n%100>=20)) return 'а';
+      return 'ов';
+    }
+
+    init();
+  </script>
+</body>
+</html>
