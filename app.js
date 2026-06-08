@@ -1,8 +1,8 @@
 // ====================================================
-// НАСТРОЙКА: вставь свой ID Google Sheets после публикации
-// Инструкция в README.md
+// НАСТРОЙКА: Published key из ссылки вида
+// https://docs.google.com/spreadsheets/d/e/KEY/pubhtml
 // ====================================================
-const SHEET_ID = 'YOUR_SHEET_ID';
+const SHEET_ID = '2PACX-1vSaEI2_ksNU-MuzD84WEk8AVBRDbueDy2FNPuDQZ0bAmCl-s4mRGiCSKLwjh1bOVF1NrElWnFwCFbNa';
 const SHEET_NAME = 'Объекты';
 
 // Fallback — тестовые данные, пока не подключена таблица
@@ -110,8 +110,8 @@ async function loadData() {
   }
 
   try {
-    // Google Sheets published as CSV
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    // Google Sheets published as CSV (published key from /d/e/KEY/pubhtml)
+    const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv`;
     const resp = await fetch(url);
     const csv = await resp.text();
     allObjects = parseCSV(csv);
