@@ -93,10 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initMap() {
   map = L.map('map', { zoomControl: true }).setView([55.58, 38.2], 10);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-    maxZoom: 19,
-  }).addTo(map);
+  const scheme = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap', maxZoom: 19,
+  });
+  const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '© Esri, Maxar, Earthstar Geographics', maxZoom: 19,
+  });
+  scheme.addTo(map);
+  L.control.layers({ 'Схема': scheme, 'Спутник': satellite }, {}, { position: 'topright' }).addTo(map);
 }
 
 // ====================================================
@@ -123,20 +127,54 @@ async function loadData() {
   }
 }
 
+function normalizeDriveUrl(url) {
+  url = (url || '').trim();
+  const m1 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  const m2 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  const id = m1 ? m1[1] : m2 ? m2[1] : null;
+  if (id && url.includes('drive.google.com')) return `https://lh3.googleusercontent.com/d/${id}`;
+  return url;
+}
+
 function parseCSV(csv) {
-  const lines = csv.trim().split('\n');
-  if (lines.length < 2) return [];
-  const headers = parseCSVRow(lines[0]);
-  return lines.slice(1).map((line, i) => {
-    const vals = parseCSVRow(line);
+  const rows = parseCSVAllRows(csv);
+  if (rows.length < 2) return [];
+  const headers = rows[0];
+  return rows.slice(1).map((vals, i) => {
     const obj = { id: String(i + 1) };
     headers.forEach((h, idx) => { obj[h.trim().toLowerCase().replace(/\s+/g, '_')] = (vals[idx] || '').trim(); });
     obj.lat = parseFloat(obj.lat) || 0;
     obj.lng = parseFloat(obj.lng) || 0;
-    obj.area_ha = parseFloat(obj.area_ha) || 0;
+    obj.area_ha = parseFloat((obj.area_ha || '').replace(',', '.')) || 0;
     obj.price = parseInt((obj.price || '').replace(/\D/g, '')) || 0;
+    if (obj.photos) obj.photos = obj.photos.split(',').map(normalizeDriveUrl).join(',');
+    if (obj.plan_photo) obj.plan_photo = normalizeDriveUrl(obj.plan_photo);
     return obj;
-  }).filter(o => o.lat && o.lng);
+  }).filter(o => o.lat && o.lng && o.name);
+}
+
+function parseCSVAllRows(csv) {
+  const rows = [];
+  let row = [], cur = '', inQ = false, i = 0;
+  while (i < csv.length) {
+    const ch = csv[i];
+    if (ch === '"') {
+      if (inQ && csv[i + 1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) {
+      row.push(cur); cur = '';
+    } else if ((ch === '\n' || ch === '\r') && !inQ) {
+      if (ch === '\r' && csv[i + 1] === '\n') i++;
+      row.push(cur); cur = '';
+      if (row.some(c => c)) rows.push(row);
+      row = [];
+    } else {
+      cur += ch;
+    }
+    i++;
+  }
+  if (cur || row.length) { row.push(cur); if (row.some(c => c)) rows.push(row); }
+  return rows;
 }
 
 function parseCSVRow(row) {
@@ -264,7 +302,9 @@ function renderList() {
         <div class="obj-card__status status-${obj.status}">${statusLabel(obj.status)}</div>
       </div>
     `;
-    card.addEventListener('click', () => selectObject(obj));
+    card.addEventListener('click', () => {
+      selectObject(obj);
+    });
     list.appendChild(card);
   });
 }
@@ -306,7 +346,7 @@ function buildPopup(obj, photo) {
     <div class="popup-meta">${obj.address || ''}</div>
     <div class="popup-price">${formatPrice(obj.price)}</div>
     <div class="obj-card__status status-${obj.status}" style="margin-bottom:8px;">${statusLabel(obj.status)}</div>
-    <button class="popup-btn" onclick="openModal('${obj.id}')">Подробнее</button>
+    <a class="popup-btn" href="object.html?id=${obj.id}">Открыть карточку →</a>
   </div>`;
 }
 

@@ -173,6 +173,10 @@ p + p { margin-top: 14px; }
 .form__field input, .form__field textarea { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; font-family: var(--font-sans); color: var(--text); background: var(--cream); transition: border-color 0.2s; resize: none; }
 .form__field input:focus, .form__field textarea:focus { outline: none; border-color: var(--green-mid); background: var(--white); }
 .form__note { font-size: 12px; color: var(--text-light); text-align: center; margin-top: 12px; }
+.form__consent { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; cursor: pointer; }
+.form__consent input[type=checkbox] { margin-top: 3px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--green-mid); cursor: pointer; }
+.form__consent span { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+.form__consent a { color: var(--green-mid); text-decoration: underline; }
 
 /* ========== FOOTER ========== */
 .footer { background: var(--dark); padding: 36px 0; }
@@ -298,4 +302,43 @@ p + p { margin-top: 14px; }
   .footer__inner { flex-direction: column; text-align: center; gap: 12px; }
   .footer__links { justify-content: center; flex-wrap: wrap; gap: 12px; }
   .footer__copy { font-size: 12px; }
+}
+
+/* ========== ANIMATIONS ========== */
+
+/* Hero entrance */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero__tag     { animation: heroFadeUp 0.8s ease both 0.15s; }
+.hero__title   { animation: heroFadeUp 0.8s ease both 0.35s; }
+.hero__sub     { animation: heroFadeUp 0.8s ease both 0.55s; }
+.hero__actions { animation: heroFadeUp 0.8s ease both 0.75s; }
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal[data-delay="1"] { transition-delay: 0.08s; }
+.reveal[data-delay="2"] { transition-delay: 0.18s; }
+.reveal[data-delay="3"] { transition-delay: 0.28s; }
+.reveal[data-delay="4"] { transition-delay: 0.38s; }
+
+/* Badge floating */
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .hero__tag, .hero__title, .hero__sub, .hero__actions { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
 }

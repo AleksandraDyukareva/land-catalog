@@ -120,6 +120,8 @@
 .detail-link--nspd { background: #dcfce7; color: #166534; }
 .detail-link--nspd:hover { background: #bbf7d0; }
 .detail-map { height: 400px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+.detail-plan-photo { border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--cream); }
+.detail-plan-photo img { width: 100%; display: block; max-height: 600px; object-fit: contain; }
 
 /* Similar */
 .similar-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
@@ -130,6 +132,10 @@
 .similar-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
 .similar-name { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
 .similar-price { font-size: 16px; font-weight: 700; color: var(--green-mid); font-family: var(--font-serif); }
+
+/* Toggle button — hidden on desktop */
+.filters-bar__toggle { display: none; }
+.filters-bar__body { display: contents; }
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
@@ -145,4 +151,13 @@
   .detail-fields { grid-template-columns: 1fr 1fr; }
   .similar-grid { grid-template-columns: 1fr; }
   .filter-row { gap: 8px; }
+
+  /* Collapsible filters on mobile */
+  .filters-bar { padding: 0; }
+  .filters-bar__toggle { display: flex; align-items: center; gap: 10px; width: 100%; padding: 13px 20px; background: none; border: none; font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer; font-family: var(--font-sans); }
+  .filters-bar__arrow { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--cream); border: 1.5px solid var(--border); font-size: 13px; transition: transform 0.2s, background 0.15s; flex-shrink: 0; }
+  .filters-bar__toggle.open .filters-bar__arrow { transform: rotate(180deg); background: var(--dark); color: #fff; border-color: var(--dark); }
+  .filters-bar__body { display: none; padding: 0 0 16px; border-top: 1px solid var(--border); }
+  .filters-bar__body.open { display: block; }
+  .filters-bar__body .container { padding-top: 14px; }
 }

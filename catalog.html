@@ -2,8 +2,23 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="favicon.ico?v=3" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=3" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=3" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png?v=3" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Каталог земельных участков</title>
+  <title>Карта участков — Земельные решения | Земля МО</title>
+  <meta name="description" content="Интерактивная карта земельных участков Московской области. Промышленные, коммерческие участки и производственные базы с фильтрами по площади, цене и направлению." />
+  <meta name="keywords" content="карта земельных участков московская область, промышленная земля на карте МО" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://adzemlia.ru/catalog.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://adzemlia.ru/catalog.html" />
+  <meta property="og:title" content="Карта участков МО | Земельные решения" />
+  <meta property="og:description" content="Интерактивная карта промышленных и коммерческих участков Московской области." />
+  <meta property="og:image" content="https://adzemlia.ru/og-image.jpg" />
+  <meta property="og:locale" content="ru_RU" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
   <!-- Yandex.Metrika — замените XXXXXXXX на ваш номер счётчика -->
@@ -22,6 +37,7 @@
 
   <header class="header">
     <div class="header__inner">
+      <a href="/" class="header__back">← На сайт</a>
       <div class="header__logo">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg>
         <span>Земельные участки</span>
@@ -33,7 +49,12 @@
   <div class="layout">
 
     <aside class="sidebar">
-      <div class="filters">
+      <button class="filters__toggle" id="filters-toggle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Фильтры
+        <span class="filters__toggle-arrow">▼</span>
+      </button>
+      <div class="filters" id="filters-panel">
         <div class="filters__title">Фильтры</div>
 
         <div class="filter-group">
@@ -103,5 +124,13 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="app.js"></script>
+  <script>
+    const toggleBtn = document.getElementById('filters-toggle');
+    const filtersPanel = document.getElementById('filters-panel');
+    toggleBtn?.addEventListener('click', () => {
+      const open = filtersPanel.classList.toggle('open');
+      toggleBtn.classList.toggle('open', open);
+    });
+  </script>
 </body>
 </html>

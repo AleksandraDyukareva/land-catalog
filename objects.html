@@ -2,8 +2,23 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="favicon.ico?v=3" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=3" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=3" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png?v=3" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Объекты — Александра Дюкарева</title>
+  <title>Объекты — Промышленные участки МО | Земельные решения</title>
+  <meta name="description" content="Каталог промышленных и коммерческих земельных участков Московской области. Участки под склад, производство, логистику. Проверенные объекты с документами от Земельные решения." />
+  <meta name="keywords" content="промышленные участки московская область, земельные участки под склад МО, купить землю под производство подмосковье, коммерческие участки МО" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://adzemlia.ru/objects.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://adzemlia.ru/objects.html" />
+  <meta property="og:title" content="Объекты — Промышленные участки МО | Земельные решения" />
+  <meta property="og:description" content="Каталог промышленных участков Московской области. Все объекты проверены по кадастру, НСПД и Росреестру." />
+  <meta property="og:image" content="https://adzemlia.ru/og-image.jpg" />
+  <meta property="og:locale" content="ru_RU" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="main.css" />
@@ -25,7 +40,7 @@
 
   <nav class="nav scrolled" id="nav">
     <div class="nav__inner">
-      <a href="/" class="nav__logo">АД<span>·</span>Земля</a>
+      <a href="/" class="nav__logo">Земельные<span> решения</span></a>
       <div class="nav__links">
         <a href="/#about">Обо мне</a>
         <a href="services.html">Услуги</a>
@@ -54,6 +69,12 @@
   <!-- FILTERS -->
   <div class="filters-bar" id="filters-bar">
     <div class="container">
+      <button class="filters-bar__toggle" id="filters-bar-toggle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Фильтры
+        <span class="filters-bar__arrow">▼</span>
+      </button>
+      <div class="filters-bar__body" id="filters-bar-body">
 
       <!-- Тип объекта -->
       <div class="filter-row">
@@ -90,6 +111,7 @@
         </div>
       </div>
 
+      </div><!-- /filters-bar__body -->
     </div>
   </div>
 
@@ -123,7 +145,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer__inner">
-        <div class="footer__logo">АД<span>·</span>Земля</div>
+        <div class="footer__logo">Земельные<span> решения</span></div>
         <div class="footer__links">
           <a href="/">Главная</a>
           <a href="services.html">Услуги</a>
@@ -132,7 +154,7 @@
           <a href="catalog.html">Карта</a>
           <a href="/#contact">Контакт</a>
         </div>
-        <div class="footer__copy">© 2025 Александра Дюкарева. Земельный специалист МО</div>
+        <div class="footer__copy">© 2025 Земельные решения. Земельный специалист МО</div>
       </div>
     </div>
   </footer>
@@ -238,6 +260,24 @@
     }
 
     init();
+
+    // Mobile filter toggle
+    const fbarToggle = document.getElementById('filters-bar-toggle');
+    const fbarBody = document.getElementById('filters-bar-body');
+    fbarToggle?.addEventListener('click', () => {
+      const open = fbarBody.classList.toggle('open');
+      fbarToggle.classList.toggle('open', open);
+    });
+
+    // Auto-close filters on scroll down
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > lastScrollY + 30 && fbarBody.classList.contains('open')) {
+        fbarBody.classList.remove('open');
+        fbarToggle.classList.remove('open');
+      }
+      lastScrollY = window.scrollY;
+    }, { passive: true });
   </script>
 </body>
 </html>

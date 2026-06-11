@@ -71,6 +71,21 @@
 .faq__item.open .faq__a { max-height: 200px; padding-bottom: 24px; }
 .faq__a p { font-size: 15px; color: var(--text-light); line-height: 1.8; }
 
+/* ========== RESULT NOTE ========== */
+.svc__result { margin-top: 16px; padding: 12px 16px; background: rgba(184,148,80,0.12); border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; font-size: 13px; color: var(--text-light); line-height: 1.6; }
+.svc--dark .svc__result { background: rgba(184,148,80,0.08); }
+
+/* ========== HOW WORK ========== */
+.how-work { padding: 80px 0; background: var(--dark); }
+.how-work .section-tag { color: var(--gold); }
+.how-work .section-title { color: var(--white); }
+.hw__steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 48px; }
+.hw__step { position: relative; padding-left: 20px; border-left: 2px solid rgba(184,148,80,0.3); }
+.hw__step:first-child { border-left-color: var(--gold); }
+.hw__num { font-family: var(--font-serif); font-size: 48px; font-weight: 700; color: var(--gold); opacity: 0.3; line-height: 1; margin-bottom: 16px; }
+.hw__step h3 { font-size: 18px; font-weight: 600; color: var(--white); margin-bottom: 12px; }
+.hw__step p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.7; }
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
   .svc__header { grid-template-columns: 48px 56px 1fr; }
@@ -85,4 +100,5 @@
   .svc--dark .svc__description { border-bottom-color: rgba(255,255,255,0.08); }
   .svc__includes { padding: 24px; }
   .page-hero { height: 320px; padding-bottom: 40px; }
+  .hw__steps { grid-template-columns: 1fr 1fr; gap: 24px; }
 }

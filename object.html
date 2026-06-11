@@ -2,8 +2,13 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="favicon.ico?v=3" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=3" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=3" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png?v=3" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Объект — Александра Дюкарева</title>
+  <title>Объект — Земельные решения</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -25,7 +30,7 @@
 
   <nav class="nav scrolled nav--static" id="nav">
     <div class="nav__inner">
-      <a href="/" class="nav__logo">АД<span>·</span>Земля</a>
+      <a href="/" class="nav__logo">Земельные<span> решения</span></a>
       <div class="nav__links">
         <a href="/#about">Обо мне</a>
         <a href="services.html">Услуги</a>
@@ -45,7 +50,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer__inner">
-        <div class="footer__logo">АД<span>·</span>Земля</div>
+        <div class="footer__logo">Земельные<span> решения</span></div>
         <div class="footer__links">
           <a href="/">Главная</a>
           <a href="services.html">Услуги</a>
@@ -54,7 +59,7 @@
           <a href="catalog.html">Карта</a>
           <a href="/#contact">Контакт</a>
         </div>
-        <div class="footer__copy">© 2025 Александра Дюкарева. Земельный специалист МО</div>
+        <div class="footer__copy">© 2025 Земельные решения. Земельный специалист МО</div>
       </div>
     </div>
   </footer>
@@ -74,7 +79,7 @@
           '<div class="detail-loading">Объект не найден. <a href="objects.html">← Вернуться к списку</a></div>';
         return;
       }
-      document.title = `${obj.name} — Александра Дюкарева`;
+      document.title = `${obj.name} — Земельные решения`;
       renderDetail(obj, objects);
     }
 
@@ -172,7 +177,7 @@
                 <img src="photo_about.jpg" alt="Александра Дюкарева">
                 <div>
                   <div class="ds-name">Александра Дюкарева</div>
-                  <div class="ds-role">Земельный специалист · 8 лет опыта</div>
+                  <div class="ds-role">Земельный специалист · 4+ лет опыта</div>
                 </div>
               </div>
             </div>
@@ -204,6 +209,15 @@
               ${obj.extra_info ? fieldCard('Дополнительно', obj.extra_info) : ''}
             </div>
           </div>
+
+          <!-- PLAN PHOTO -->
+          ${obj.plan_photo ? `
+          <div class="detail-section">
+            <h2 class="detail-section-title">Схема границ участка</h2>
+            <div class="detail-plan-photo">
+              <img src="${obj.plan_photo}" alt="Схема границ участка" loading="lazy">
+            </div>
+          </div>` : ''}
 
           <!-- LINKS -->
           ${rosreestrUrl || nspdUrl ? `

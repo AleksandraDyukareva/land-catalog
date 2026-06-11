@@ -145,6 +145,17 @@ const DEMO_OBJECTS = [
 // ============================================================
 // Загрузка данных из Google Sheets
 // ============================================================
+function normalizeDriveUrl(url) {
+  url = url.trim();
+  let id = null;
+  const m1 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  const m2 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m1) id = m1[1];
+  else if (m2) id = m2[1];
+  if (id && url.includes('drive.google.com')) return `https://lh3.googleusercontent.com/d/${id}`;
+  return url;
+}
+
 async function loadObjects() {
   if (SHEET_ID === 'YOUR_SHEET_ID') return DEMO_OBJECTS;
   try {
@@ -152,6 +163,10 @@ async function loadObjects() {
     const resp = await fetch(url);
     const csv = await resp.text();
     const parsed = parseCSV(csv);
+    parsed.forEach(o => {
+      if (o.photos) o.photos = o.photos.split(',').map(normalizeDriveUrl).join(',');
+      if (o.plan_photo) o.plan_photo = normalizeDriveUrl(o.plan_photo);
+    });
     return parsed.length > 0 ? parsed : DEMO_OBJECTS;
   } catch (e) {
     console.error('Ошибка загрузки:', e);
@@ -160,23 +175,45 @@ async function loadObjects() {
 }
 
 function parseCSV(csv) {
-  const lines = csv.trim().split('\n');
-  if (lines.length < 2) return [];
-  const headers = parseCSVRow(lines[0]);
-  return lines.slice(1).map((line, i) => {
-    const vals = parseCSVRow(line);
+  const rows = parseCSVAllRows(csv);
+  if (rows.length < 2) return [];
+  const headers = rows[0];
+  return rows.slice(1).map((vals, i) => {
     const obj = { id: String(i + 1) };
     headers.forEach((h, idx) => {
       obj[h.trim().toLowerCase().replace(/\s+/g, '_')] = (vals[idx] || '').trim();
     });
     obj.lat = parseFloat(obj.lat) || 0;
     obj.lng = parseFloat(obj.lng) || 0;
-    obj.area_ha = parseFloat(obj.area_ha) || 0;
+    obj.area_ha = parseFloat((obj.area_ha || '').replace(',', '.')) || 0;
     obj.building_area = parseFloat(obj.building_area) || 0;
     obj.price = parseInt((obj.price || '').replace(/\D/g, '')) || 0;
-    if (!obj.id) obj.id = String(i + 1);
     return obj;
   }).filter(o => o.name);
+}
+
+function parseCSVAllRows(csv) {
+  const rows = [];
+  let row = [], cur = '', inQ = false, i = 0;
+  while (i < csv.length) {
+    const ch = csv[i];
+    if (ch === '"') {
+      if (inQ && csv[i + 1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) {
+      row.push(cur); cur = '';
+    } else if ((ch === '\n' || ch === '\r') && !inQ) {
+      if (ch === '\r' && csv[i + 1] === '\n') i++;
+      row.push(cur); cur = '';
+      if (row.some(c => c)) rows.push(row);
+      row = [];
+    } else {
+      cur += ch;
+    }
+    i++;
+  }
+  if (cur || row.length) { row.push(cur); if (row.some(c => c)) rows.push(row); }
+  return rows;
 }
 
 function parseCSVRow(row) {
